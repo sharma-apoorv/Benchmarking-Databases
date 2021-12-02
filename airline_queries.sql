@@ -327,3 +327,57 @@ WHERE
 ORDER BY
 	percent_early DESC
 ;
+
+-- Query 8: How many flights are there from LAX to JFK with one stop?
+SELECT count(*)
+FROM 
+    performance f1
+INNER JOIN performance f2
+ON
+	f1.Dest = f2.Origin
+WHERE
+    (
+        f1.Origin = 'LAX' AND
+        f2.Dest = 'JFK' AND
+        f2.CRSDepTime > f1.CRSArrTime AND
+      	f1.Year = 2015.0 AND f2.Year = 2015.0 AND
+      	f1.Month = f2.Month AND
+      	f1.DayofMonth = f2.DayofMonth
+    )
+GROUP BY f1.Origin, f2.Dest
+;
+
+-- Query 9: Top 5 states that historically have the most number of direct flights between them
+
+SELECT OriginStateName, DestStateName, Count(*)
+FROM performance
+WHERE OriginStateName != DestStateName
+GROUP BY OriginStateName, DestStateName
+ORDER BY count(*) DESC
+LIMIT 5
+;
+
+-- Query 10: Min and Max states
+SELECT Origin, Dest, Max(CRSElapsedTime), Min(CRSElapsedTime)
+FROM performance
+WHERE Year = 2020.0
+;
+
+-- Query 11:
+SELECT 
+	 p1.OriginCityName, p2.DestCityName, COUNT(*)
+FROM 
+	performance p1
+INNER JOIN performance p2
+ON
+	p1.Dest = p2.Origin
+WHERE
+	p1.Origin = 'SEA' AND
+	p2.CRSDepTime > p1.CRSArrTime AND
+    p1.Year = 2020.0 AND p2.Year = 2020.0 AND
+    p1.Month = p2.Month AND
+    p1.DayofMonth = p2.DayofMonth AND
+    p1.OriginCityName < p2.DestCityName
+
+GROUP BY p1.OriginCityName, p2.DestCityName
+;
